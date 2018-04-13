@@ -18,16 +18,16 @@ To be improved for the next model:
  * Improve my soldering technic oO
 
 ### Led Cube alone.
-![Image](LEDCube.jpg)
+![Image](img/LEDCube.jpg)
 
 ### Bottom, before wiring.
-![Image](LEDCubeRessitors.jpg)
+![Image](img/LEDCubeRessitors.jpg)
 
 ### Bottom after wiring.
-![Image](LEDCubeBottomWired.jpg)
+![Image](img/LEDCubeBottomWired.jpg)
 
 ### My wiring cables where too big, AWG 18, which is about the same width as the hole pitch of my board.
-![Image](LEDCubeWireTooBig.jpg)
+![Image](img/LEDCubeWireTooBig.jpg)
 
 ### Led Cube wired to the Arduino UNO
-![Image](LEDCubeWired.jpg)
+![Image](img/LEDCubeWired.jpg)
