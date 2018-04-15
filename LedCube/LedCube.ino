@@ -86,13 +86,13 @@ unsigned char sinewave[] = {
  */
 void levels(void) {
   for(int i = 0; i < BRIGHTNESS_MAX; i++) {
-    memset(FrameBufferGetBack(), i, FRAME_SIZE());
+    FrameBufferSet(i);
     FrameBufferSwitch();
     delay(100);
   }
 
   for(int i = BRIGHTNESS_MAX; i >= 0; i--) {
-    memset(FrameBufferGetBack(), i, FRAME_SIZE());
+    FrameBufferSet(i);
     FrameBufferSwitch();
     delay(100);
   }
@@ -104,11 +104,11 @@ void levels(void) {
  * Mainly useful as a test of the led cube.
  */
 void testfreq(void) {
-  memset(FrameBufferGetBack(), 255, FRAME_SIZE());
+  FrameBufferSet(255);
   FrameBufferSwitch();
   delay(200);
 
-  memset(FrameBufferGetBack(), 1, FRAME_SIZE());
+  FrameBufferSet(1);
   FrameBufferSwitch();
   delay(200);
 }
@@ -117,11 +117,11 @@ void testfreq(void) {
  * Blinks the whole cube on and off with a period `period`.
  */
 void blinkWholeCube(int period /* [ms] */) {
-  memset(FrameBufferGetBack(), 255, FRAME_SIZE());
+  FrameBufferSet(255);
   FrameBufferSwitch();
   delay(period >> 1);
   
-  memset(FrameBufferGetBack(), 0, FRAME_SIZE());
+  FrameBufferBlank();
   FrameBufferSwitch();
   delay(period >> 1);
 }
@@ -131,7 +131,7 @@ void blinkWholeCube(int period /* [ms] */) {
  */
 void sine(int period /* [ms] */) {
   for(short int i = 0; i < BRIGHTNESS_MAX; i++) {
-    memset(FrameBufferGetBack()->data, sinewave[i], FRAME_SIZE());
+    FrameBufferSet(sinewave[i]);
     FrameBufferSwitch();
     delay(period / BRIGHTNESS_MAX);
   }
@@ -143,12 +143,12 @@ void sine(int period /* [ms] */) {
  */
 void sine2(int period /* [ms] */) {
   for(short int i = 0; i < BRIGHTNESS_MAX; i++) {
-    memset(FrameBufferGetBack(), 0, FRAME_SIZE());
+    FrameBufferBlank();
 
     for (char x = 1; x < 3; x++) {
       for (char y = 1; y < 3; y++) {
         for (char z = 1; z < 3; z++) {
-          FrameBufferGetBack()->data[x][y][z] = sinewave[i];
+          FrameBufferWrite(x, y, z, sinewave[i]);
         }
       }
     }
@@ -164,11 +164,11 @@ void sine2(int period /* [ms] */) {
  */
 void sine3(int period /* [ms] */) {
   for(int i = 0; i < 256; i++) {
-    memset(FrameBufferGetBack()->data, 0, FRAME_SIZE());
+    FrameBufferBlank();;
     for (char x = 1; x < 3; x++) {
       for (char y = 1; y < 3; y++) {
         for (char z = 1; z < 3; z++) {
-          FrameBufferGetBack()->data[x][y][z] = sinewave[i];
+          FrameBufferWrite(x, y, z, sinewave[i]);
         }
       }
     }
@@ -179,7 +179,7 @@ void sine3(int period /* [ms] */) {
           if ( ((x == 0) || (x == 3))
              ||((y == 0) || (y == 3))
              ||((z == 0) || (z == 3))) {
-                FrameBufferGetBack()->data[x][y][z] = sinewave[(i+128)%256];
+                FrameBufferWrite(x, y, z, sinewave[(i+128)%256]);
           }
         }
       }
@@ -194,14 +194,16 @@ void sine3(int period /* [ms] */) {
  * Random rain drpos fall to the bottom of the cube
  */
 void randomRain() {
+  unsigned char val;
   for (char a = MAX_Z; a > 0; a--) {
     // animation of 4 steps, requiring computing 4 full frames
     for (char x = 0; x < MAX_X; x++) {
       for (char y = 0; y < MAX_Y; y++) {
-          FrameBufferGetBack()->data[x][y][3] = (random(0, 4) == 0) ? 1 : random(0, BRIGHTNESS_MAX);
-          FrameBufferGetBack()->data[x][y][2] = FrameBufferGetFront()->data[x][y][3];
-          FrameBufferGetBack()->data[x][y][1] = FrameBufferGetFront()->data[x][y][2];
-          FrameBufferGetBack()->data[x][y][0] = FrameBufferGetFront()->data[x][y][1];
+          FrameBufferWrite(x, y, 3,
+            (random(0, 4) == 0) ? 1 : random(0, BRIGHTNESS_MAX));
+          FrameBufferCopy(x, y, 2, x, y, 3);
+          FrameBufferCopy(x, y, 1, x, y, 2);
+          FrameBufferCopy(x, y, 0, x, y, 1);
       }
     }
 

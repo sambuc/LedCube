@@ -68,30 +68,53 @@ extern struct FrameBuffer FrameBuffer;
 void FrameBufferSwitch(void);
 
 /**
- * Returns the current front (visible) frame buffer
+ * Read the brightness ``val'' of the led at position (x,y,z), in the front
+ * buffer.
  */
-Frame *FrameBufferGetFront(void);
-
+void FrameBufferReadFront(char x, char y, char z, unsigned char *val);
 
 /**
- * Returns the current back (invisible) frame buffer
+ * Read the brightness ``val'' of the led at position (x,y,z), in the back
+ * buffer.
  */
-Frame *FrameBufferGetBack(void);
+void FrameBufferReadBack(char x, char y, char z, unsigned char *val);
+
+/**
+ * Copy the value from (x2, y2, z2) in the front buffer, to (x1,y1,z1) in
+ * the back buffer.
+ */
+void FrameBufferCopy(char x1, char y1, char z1, char x2, char y2, char z2);
 
 /**
  * Write the brightness ``val'' to the led at position (x,y,z), in the back
  * buffer.
- * 
+ *
  * In order to make the value visible, a call to FrameBufferSwitch is needed,
  * once the drawing of the frame is complete.
  */
 void FrameBufferWrite(char x, char y, char z, unsigned char val);
 
 /**
- * Print the string, a letter at a time, showing each for delayPerLetter time, 
+ * Write the brightness ``val'' to the whole back buffer.
+ *
+ * In order to make the value visible, a call to FrameBufferSwitch is needed,
+ * once the drawing of the frame is complete.
+ */
+void FrameBufferSet(unsigned char val);
+
+/**
+ * Blank the Back Buffer.
+ *
+ * In order to make the value visible, a call to FrameBufferSwitch is needed,
+ * once the drawing of the frame is complete.
+ */
+void FrameBufferBlank();
+
+/**
+ * Print the string, a letter at a time, showing each for delayPerLetter time,
  * with the associated brightness.
- * 
- * This has minimal checks, only lowercase font, space and zero to terminate 
+ *
+ * This has minimal checks, only lowercase font, space and zero to terminate
  * the string.
  */
 void FrameBufferWriteStr(char * str, const short delayPerLetter, 

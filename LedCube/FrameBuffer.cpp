@@ -269,7 +269,7 @@ void FrameBufferSwitch(void) {
 #endif
 }
 
-Frame *FrameBufferGetFront(void) {
+static Frame *FrameBufferGetFront(void) {
 #if FRAMEBUFFER_POINTERS
   return FrameBuffer.front;
 #else
@@ -277,7 +277,7 @@ Frame *FrameBufferGetFront(void) {
 #endif
 }
 
-Frame *FrameBufferGetBack(void) {
+static Frame *FrameBufferGetBack(void) {
 #if FRAMEBUFFER_POINTERS
   return FrameBuffer.back;
 #else
@@ -285,8 +285,29 @@ Frame *FrameBufferGetBack(void) {
 #endif
 }
 
+void FrameBufferReadFront(char x, char y, char z, unsigned char *val) {
+  *val = FrameBufferGetFront()->data[x][y][z];
+}
+
+void FrameBufferReadBack(char x, char y, char z, unsigned char *val) {
+  *val = FrameBufferGetBack()->data[x][y][z];
+}
+
+void FrameBufferCopy(char x1, char y1, char z1, char x2, char y2, char z2) {
+  FrameBufferGetBack()->data[x1][y1][z1] =
+    FrameBufferGetFront()->data[x2][y2][z2];
+}
+
 void FrameBufferWrite(char x, char y, char z, unsigned char val) {
   FrameBufferGetBack()->data[x][y][z] = val;
+}
+
+void FrameBufferSet(unsigned char val) {
+  memset(FrameBufferGetBack(), val, FRAME_SIZE());
+}
+
+void FrameBufferBlank() {
+  FrameBufferSet(0);
 }
 
 static void letter(char l, char brightness) {
