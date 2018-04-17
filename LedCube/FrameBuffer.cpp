@@ -256,9 +256,6 @@ struct FrameBuffer {
 } FrameBuffer;
 #endif
 
-extern char position2pin[MAX_X][MAX_Y];
-extern char layer[MAX_Z];
-
 void FrameBufferSwitch(void) {
 #if FRAMEBUFFER_POINTERS
   Frame * t = FrameBuffer.back;
@@ -285,20 +282,24 @@ static Frame *FrameBufferGetBack(void) {
 #endif
 }
 
-void FrameBufferReadFront(char x, char y, char z, unsigned char *val) {
+void FrameBufferReadFront(unsigned char x, unsigned char y, unsigned char z,
+        unsigned char *val) {
   *val = FrameBufferGetFront()->data[x][y][z];
 }
 
-void FrameBufferReadBack(char x, char y, char z, unsigned char *val) {
+void FrameBufferReadBack(unsigned char x, unsigned char y, unsigned char z,
+        unsigned char *val) {
   *val = FrameBufferGetBack()->data[x][y][z];
 }
 
-void FrameBufferCopy(char x1, char y1, char z1, char x2, char y2, char z2) {
+void FrameBufferCopy(unsigned char x1, unsigned char y1, unsigned char z1,
+        unsigned char x2, unsigned char y2, unsigned char z2) {
   FrameBufferGetBack()->data[x1][y1][z1] =
     FrameBufferGetFront()->data[x2][y2][z2];
 }
 
-void FrameBufferWrite(char x, char y, char z, unsigned char val) {
+void FrameBufferWrite(unsigned char x, unsigned char y, unsigned char z,
+        unsigned char val) {
   FrameBufferGetBack()->data[x][y][z] = val;
 }
 
@@ -306,14 +307,14 @@ void FrameBufferSet(unsigned char val) {
   memset(FrameBufferGetBack(), val, FRAME_SIZE());
 }
 
-void FrameBufferBlank() {
+void FrameBufferBlank(void) {
   FrameBufferSet(0);
 }
 
-static void letter(char l, char brightness) {
+static void letter(unsigned char l, unsigned char brightness) {
   memset(FrameBufferGetBack(), 0, FRAME_SIZE());
-  for (char x = 0; x < MAX_X; x++) {
-    for (char y = 0; y < MAX_Y; y++) {
+  for (unsigned char x = 0; x < MAX_X; x++) {
+    for (unsigned char y = 0; y < MAX_Y; y++) {
       FrameBufferGetBack()->data[3][y][3-x] =
         font[l - 'a'][x][y] * brightness;
     }
@@ -322,16 +323,16 @@ static void letter(char l, char brightness) {
   delay(200);
 }
 
-void printAllSymbols() {
-  for(char c = 0; c < sizeof(font)/sizeof(font[0]); c++) {
+void printAllSymbols(void) {
+  for(unsigned char c = 0; c < sizeof(font)/sizeof(font[0]); c++) {
     letter(c+'a', 127);
     delay(500);
   }
 }
 
-void FrameBufferWriteStr(char * str, const short delayPerLetter, 
+void FrameBufferWriteStr(char const * str, const short delayPerLetter, 
         const unsigned char brightness) {
-  unsigned char *c = str;
+  char const *c = str;
   while(*c != 0) {
     if (*c == ' ') {
       memset(FrameBufferGetBack(), 0, FRAME_SIZE());
@@ -351,7 +352,13 @@ void FrameBufferWriteStr(char * str, const short delayPerLetter,
   }
 }
 
-void FrameBufferRefresh(void) {
+
+static void FrameBufferRefresh(void) {
+#if DEBUG_FB_REFRESH
+  static long int timeStartRefresh = micros();
+  static long int timeLastRefresh = 0;
+#endif
+
   Frame *f = FrameBufferGetFront();
 #if BRIGHTNESS_INCREMENT
   FrameBuffer.intensity = 
@@ -360,15 +367,10 @@ void FrameBufferRefresh(void) {
   FrameBuffer.intensity = 128;
 #endif
 
-#if DEBUG_FB_REFRESH
-  static int timeStartRefresh = micros();
-  static int timeLastRefresh = 0;
-#endif
-
-  for (char z = 0; z < MAX_Z; z++) {
+  for (unsigned char z = 0; z < MAX_Z; z++) {
     // 1. Set up the layer leds to be turned on / off
-    for (char x = 0; x < MAX_X; x++) {
-      for (char y = 0; y < MAX_Y; y++) {
+    for (unsigned char x = 0; x < MAX_X; x++) {
+      for (unsigned char y = 0; y < MAX_Y; y++) {
         if (f->data[x][y][z] > FrameBuffer.intensity) {
           digitalWrite(position2pin[x][y], HIGH);
         } else {
@@ -404,15 +406,15 @@ void FrameBufferRefresh(void) {
 
 void FrameBufferInit(void) {
   // Setting rows to ouput
-  for (char x = 0; x < MAX_X; x++) {
-    for (char y = 0; y < MAX_Y; y++) {
+  for (unsigned char x = 0; x < MAX_X; x++) {
+    for (unsigned char y = 0; y < MAX_Y; y++) {
       pinMode(position2pin[x][y], OUTPUT);
       digitalWrite(position2pin[x][y], LOW);
     }
   }
 
   // Setting layers to output
-  for (char z = 0; z < MAX_Z; z++) {
+  for (unsigned char z = 0; z < MAX_Z; z++) {
     pinMode(layer[z], OUTPUT);
     digitalWrite(layer[z], HIGH);
   }

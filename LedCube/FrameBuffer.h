@@ -32,9 +32,8 @@
  */
 
 /* Either 1 (Enabled) or 0 (disabled) */
-#define DEBUG 0
 #if DEBUG
-#define DEBUG_FB_REFRESH 1
+#define DEBUG_FB_REFRESH 0
 #endif
 
 /* All the code assumes dimensions are below 127, as signed chars are used to
@@ -71,19 +70,22 @@ void FrameBufferSwitch(void);
  * Read the brightness ``val'' of the led at position (x,y,z), in the front
  * buffer.
  */
-void FrameBufferReadFront(char x, char y, char z, unsigned char *val);
+void FrameBufferReadFront(unsigned char x, unsigned char y, unsigned char z,
+        unsigned char *val);
 
 /**
  * Read the brightness ``val'' of the led at position (x,y,z), in the back
  * buffer.
  */
-void FrameBufferReadBack(char x, char y, char z, unsigned char *val);
+void FrameBufferReadBack(unsigned char x, unsigned char y, unsigned char z,
+        unsigned char *val);
 
 /**
  * Copy the value from (x2, y2, z2) in the front buffer, to (x1,y1,z1) in
  * the back buffer.
  */
-void FrameBufferCopy(char x1, char y1, char z1, char x2, char y2, char z2);
+void FrameBufferCopy(unsigned char x1, unsigned char y1, unsigned char z1,
+        unsigned char x2, unsigned char y2, unsigned char z2);
 
 /**
  * Write the brightness ``val'' to the led at position (x,y,z), in the back
@@ -92,7 +94,8 @@ void FrameBufferCopy(char x1, char y1, char z1, char x2, char y2, char z2);
  * In order to make the value visible, a call to FrameBufferSwitch is needed,
  * once the drawing of the frame is complete.
  */
-void FrameBufferWrite(char x, char y, char z, unsigned char val);
+void FrameBufferWrite(unsigned char x, unsigned char y, unsigned char z,
+        unsigned char val);
 
 /**
  * Write the brightness ``val'' to the whole back buffer.
@@ -108,7 +111,7 @@ void FrameBufferSet(unsigned char val);
  * In order to make the value visible, a call to FrameBufferSwitch is needed,
  * once the drawing of the frame is complete.
  */
-void FrameBufferBlank();
+void FrameBufferBlank(void);
 
 /**
  * Print the string, a letter at a time, showing each for delayPerLetter time,
@@ -117,18 +120,13 @@ void FrameBufferBlank();
  * This has minimal checks, only lowercase font, space and zero to terminate
  * the string.
  */
-void FrameBufferWriteStr(char * str, const short delayPerLetter, 
+void FrameBufferWriteStr(char const * str, const short delayPerLetter, 
         const unsigned char brightness);
 
 /**
  * Print all symbols available, one after the other.
  */
 void printAllSymbols(void);
-
-/** 
- * Draw the front frame on the ``screen''.
- */
-void FrameBufferRefresh(void);
 
 /** 
  * Initialize the framebuffer, and start the timer to refresh the ``screen''.

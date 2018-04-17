@@ -47,13 +47,13 @@
 
 /* Either 1 (Enabled) or 0 (disabled) */
 #define DEBUG 0 
+
+#include "FrameBuffer.h"
+
 #if DEBUG
 #define DEBUG_SETUP 1
 #define DEBUG_LOOP 1
 #endif
-
-#include "FrameBuffer.h"
-
 
 /******************************* ANIMATIONS ********************************/
 
@@ -165,17 +165,17 @@ void sine2(int period /* [ms] */) {
 void sine3(int period /* [ms] */) {
   for(int i = 0; i < 256; i++) {
     FrameBufferBlank();;
-    for (char x = 1; x < 3; x++) {
-      for (char y = 1; y < 3; y++) {
-        for (char z = 1; z < 3; z++) {
+    for (unsigned char x = 1; x < 3; x++) {
+      for (unsigned char y = 1; y < 3; y++) {
+        for (unsigned char z = 1; z < 3; z++) {
           FrameBufferWrite(x, y, z, sinewave[i]);
         }
       }
     }
 
-    for (char x = 0; x < MAX_X; x++) {
-      for (char y = 0; y < MAX_Y; y++) {
-        for (char z = 0; z < MAX_Z; z++) {
+    for (unsigned char x = 0; x < MAX_X; x++) {
+      for (unsigned char y = 0; y < MAX_Y; y++) {
+        for (unsigned char z = 0; z < MAX_Z; z++) {
           if ( ((x == 0) || (x == 3))
              ||((y == 0) || (y == 3))
              ||((z == 0) || (z == 3))) {
@@ -193,12 +193,11 @@ void sine3(int period /* [ms] */) {
 /**
  * Random rain drpos fall to the bottom of the cube
  */
-void randomRain() {
-  unsigned char val;
-  for (char a = MAX_Z; a > 0; a--) {
+void randomRain(void) {
+  for (unsigned char a = MAX_Z; a > 0; a--) {
     // animation of 4 steps, requiring computing 4 full frames
-    for (char x = 0; x < MAX_X; x++) {
-      for (char y = 0; y < MAX_Y; y++) {
+    for (unsigned char x = 0; x < MAX_X; x++) {
+      for (unsigned char y = 0; y < MAX_Y; y++) {
           FrameBufferWrite(x, y, 3,
             (random(0, 4) == 0) ? 1 : random(0, BRIGHTNESS_MAX));
           FrameBufferCopy(x, y, 2, x, y, 3);
@@ -214,7 +213,7 @@ void randomRain() {
 
 /********************************** BODY ***********************************/
 
-void setup()
+void setup(void)
 {
 #if DEBUG_SETUP
   static long timeStartSetup = micros();
@@ -223,20 +222,19 @@ void setup()
   // Seeding random for random pattern
   randomSeed(analogRead(10));
 
+  FrameBufferInit();
+
 #if DEBUG
   Serial.begin(9600);
   Serial.println("\nSetup DONE");
 #endif
-
-  FrameBufferInit();
-
 #if DEBUG_SETUP
   Serial.print("Setup Time: ");
   Serial.println((micros() - timeStartSetup), DEC);
 #endif
 }
 
-void loop() {
+void loop(void) {
   static char a = -1;
 
 #if DEBUG_LOOP
@@ -260,7 +258,6 @@ void loop() {
       default: break;
     }
   }
-
 
 #if DEBUG_LOOP
   Serial.print("Loop Time: ");
